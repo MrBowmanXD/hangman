@@ -1,7 +1,20 @@
 module Message
 	def intro_message
+		system("clear")
 		puts "Welcome to the hangman game bro\n\n"
 		puts "What is your name?"
+	end
+
+	def victory
+		system("clear")
+		puts "You win!\n"
+		puts "Well done player."
+	end
+
+	def lost
+		system("clear")
+		puts "You lose!\n"
+		puts "Mission failed, well get em next time."
 	end
 end
 
@@ -12,6 +25,9 @@ class Game
 		@start = true
 		intro_message
 		@player_name = gets.chomp
+		@player_won = false
+		@player_lost = false
+		@i = 0
 	end
 
 	private
@@ -26,26 +42,51 @@ class Game
 			end
 		end
 		words_to_choose = words_to_choose.compact
-		@secret_word = words_to_choose.sample
+		@secret_word = words_to_choose.sample.split("")
 		@secret_word
 	end
 
-	public
+	private
+	def hangman_set_up
+		@word = secret_word_generator if @word.nil?
+		puts @word
+		@words_array = [Array.new(@word.length, '_ '), Array.new(@word.length, false)]
+	end
+
+	private
 	def hangman_display
-		i = 0
-		word = secret_word_generator
-		puts word
-		loop do
+		@words_array[0].each {|letter| print letter }
+	end
 
-			print "_ "
+	public
+	def game_play
+		hangman_set_up
+		while @player_won == false && @player_lost == false
+			hangman_display
+			round
+		end
+	end
 
-			i += 1
-			if i == @secret_word.length
-				break
+
+	private
+	def round
+		@player_choice = gets.chomp
+		@word.each_with_index do |char, index|
+			if @player_choice == char && @words_array[1][index] == false
+				@words_array[0][index] = char
+				@words_array[1][index] = true
 			end
 		end
+		if @words_array[0] == @word
+			@player_won = true
+			victory
+		elsif @i == 15
+			@player_lost = true
+			lost
+		end
+		@i += 1
 	end
 end
 
 game = Game.new
-game.hangman_display
+game.game_play
