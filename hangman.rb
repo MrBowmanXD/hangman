@@ -49,7 +49,6 @@ class Game
 	private
 	def hangman_set_up
 		@word = secret_word_generator if @word.nil?
-		puts @word
 		@words_array = [Array.new(@word.length, '_ '), Array.new(@word.length, false)]
 	end
 
